@@ -1,8 +1,0 @@
-<?php
-	require_once("../../modules/class.fgroup.php");
-	$myopenid=$_REQUEST['openid'];
-	$id=$_REQUEST['groupid'];
-	$group = new Group();
-	$group->deleteGroup($myopenid, $id);
-	echo "1";
-?>

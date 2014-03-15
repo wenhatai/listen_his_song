@@ -1,9 +1,0 @@
-﻿<?php 
-	require_once("../modules/class.search.php");
-	session_start();
-	$fid=$_POST['fid'];
-	$days=$_POST['days'];
-	$search=new Search();
-	$search->days=$days;
-	$search->songlistorderbydays($fid,$days);
-?>

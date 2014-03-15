@@ -1,6 +1,0 @@
-$(document).ready(function(){
-	$("#return").live('click',function(){
-		document.getElementById('playlist').style.display ="";
-		document.getElementById('list_all').style.display ="none";
-	});
-});

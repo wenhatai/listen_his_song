@@ -1,5 +1,0 @@
-$(document).ready(function(){
-   $("#posting").click(function(){
-      var newWindows = open("postsong.html","name1","resizeable=1,height=300,width=300");
-   });
-});

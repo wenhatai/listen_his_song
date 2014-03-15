@@ -1,9 +1,0 @@
-﻿<?php
-	require_once("../modules/class.song.php");
-	$sid=$_POST['id'];
-	$song=new Song();
-	$result=$song->song_info($sid);
-	if($result!=""){
-		echo(json_encode($result));
-	}
-?>
