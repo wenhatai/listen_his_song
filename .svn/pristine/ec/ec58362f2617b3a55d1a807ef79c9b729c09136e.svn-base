@@ -1,0 +1,21 @@
+﻿$(document).ready(function(){
+	$.ajax({
+		url:"song/songlist.php",
+		type:"POST",
+		success:function(data){
+			var song=data.split("!");
+			var i=1;
+			var cl;
+			for(x in song){
+				if(i%2==1)
+					cl="odd";
+				else 
+					cl="even";
+				i++;
+				var songlist=song[x].split("|");
+				$("#songlist").append("<li sid="+ songlist[0] +" class="+ cl + "><span class='list1'>"+ songlist[1] +" </span>"
+				+ "<span class='list2'>"+ songlist[2] +"</span><span class='list3'>hot</span><span class='list4'>下载</span>");
+			}
+		}	
+	});
+});

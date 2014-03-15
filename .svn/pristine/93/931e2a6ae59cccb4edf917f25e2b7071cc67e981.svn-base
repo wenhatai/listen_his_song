@@ -1,0 +1,30 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	
+	<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.min.js"></script>
+	<script language="javascript" type="text/javascript">
+		$(document).ready(function(){
+			$("#begin").click(function(){
+				var request = "../../p/soso/searchsong.php";
+				var name = $("#songname").val();
+				$.ajax({
+					url:request,
+					data:{sname:name},
+					success:function(data){
+						alert("Here "+data+" is");
+						$("#result").html(data);
+					}
+				});
+			})
+		})
+	</script>
+</head>
+<body>
+	<form name='search' action='javascript:;'>
+		<input type="text" id="songname" name="songname" />
+		<input type='button' id="begin" value="搜索"/>
+	</form>
+	<p id="result"></p>
+</body>
+</html>

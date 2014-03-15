@@ -1,0 +1,52 @@
+﻿<?php
+	require_once("../modules/class.user.php");
+  if(!empty($_FILES["file"]["name"])){
+    if($_FILES["file"]["error"]>0)
+	{
+	  switch($_FILES["file"]["error"])
+	  {
+	     case 1:
+		    echo "<script language=javascript>alert('对不起！您上传的文件超出配置文件规定值！');</script>";
+			echo "<script language=javascript>window.close();</script>"; 
+			break;
+	     case 2:
+		    echo "<script language=javascript>alert('对不起！您上传的文件过大！');</script>";
+			echo "<script language=javascript>window.close();</script>"; 
+			break;
+		 case 3:
+		    echo "<script language=javascript>alert('对不起！您上传的文件不全！');</script>";
+			echo "<script language=javascript>window.close();</script>"; 
+			break;
+		 case 4:
+		    echo "<script language=javascript>alert('对不起！您没有上传文件！');</script>";
+			echo "<script language=javascript>window.close();</script>"; 
+			break;
+	  } 
+	}
+	else{
+	if(!is_dir("../music/")){
+	  mkdir("../music/");  
+	}
+	$path="../music/".$_FILES["file"]["name"];
+	if(is_uploaded_file($_FILES["file"]["tmp_name"]))
+	{
+	   if(!move_uploaded_file($_FILES["file"]["tmp_name"],$path)){
+	        echo "<script language=javascript>alert('上传失败！');</script>";
+			echo "<script language=javascript>window.close();</script>";   
+	   }
+	   else{
+	       echo "<script language=javascript>alert('上传成功！');</script>";
+		   $user=new User();
+		   $user->upload_song($_FILES["file"]["name"],"music/".$_FILES["file"]["name"],"默认");
+		   echo "<script language=javascript>window.close();</script>"; 
+	   
+	   }
+	}
+   }
+  }
+  else
+  {
+     echo "<script language=javascript>alert('对不起！您没有上传文件!!!');</script>";
+	 echo "<script language=javascript>window.close();</script>";   
+  }
+ ?>

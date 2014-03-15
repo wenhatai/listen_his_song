@@ -1,0 +1,6 @@
+$(document).ready(function(){
+   $("a.jp-playlist-item").live('click',function(){
+      var songname = $(this).text();
+	 $("div#jp-music-title h2").text(songname) ;  
+   });
+});

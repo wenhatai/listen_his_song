@@ -1,0 +1,7 @@
+﻿<?php 
+	require_once("../modules/class.song.php");
+	session_start();
+		$uid=$_SESSION['uid'];
+		$song=new Song();
+		$song->songlist(1);
+?>

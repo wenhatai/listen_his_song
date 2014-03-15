@@ -1,0 +1,31 @@
+﻿$(document).ready(function(){	
+	$(".list").live("click",function(){
+		var ids=window.event.srcElement.id.split("_");
+		var id=ids[1];
+		$.ajax({
+			url:"p/friendsongs.php",
+			type:"POST",
+			data:{"id":id},
+			success:function(data){
+				alert(data);
+				var songs = eval('(' + data + ')');
+				$("#list_all ul").empty();
+				for(var i=0;i<songs.length;i++){
+					if(i%2==0)
+						var addclass="even";
+					else
+						addclass="odd";
+					$("#list_all ul")
+						.append("<li class=''>"
+									+"<span id='sid_"+songs[i].sid+"' class='list1'>"+ songs[i].song.name +"</span>"
+									+"<span class='list2'>"+ songs[i].song.genre_name +"</span>"
+								+"</li>");
+				}
+				$("#playlist").hide();
+				$("#list_all").show();
+				$("#return").removeAttr("disabled");
+				$("#last").removeAttr("disabled");
+			},
+		});
+	});
+});

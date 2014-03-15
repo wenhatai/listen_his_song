@@ -1,0 +1,50 @@
+$(document).ready(function() {
+	
+	$( "#dialog" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		bigframe: true,
+		buttons: {
+			"上传": function() {
+				alert("Ok!");
+				//$( this ).dialog( "close" );
+			},
+			"取消": function() {
+				$( this ).dialog( "close" );
+			}
+		},
+		close: function() {
+			
+		}
+	});
+	
+	$("#file_upload").uploadify({
+		'auto'			: true,
+		'multi'			: false,
+        'formData'      : {'someKey' : 'someValue', 'someOtherKey' : 1},
+        'swf'           : 'js/uploadify.swf',
+        'uploader'      : 'p/uploadify.php',
+		'queueSizeLimit': '1',
+		'simUploadLimit': '1',
+		'onSelect' : function(event,ID,fileObj) {
+			if($('#upload'+ID).length!=0){
+				return false;
+			}
+		},
+		'onUploadSuccess' : function(file, data, response) {
+            alert('The file ' + file.name + ' was successfully uploaded with a response of ' + response + ':' + data);
+        },
+		'onUploadError' : function(file, errorCode, errorMsg, errorString) {
+            alert('The file ' + file.name + ' could not be uploaded: ' + errorString);
+        },
+    });
+
+	$( "#upload-song")
+		.button()
+		.click(function(){
+			$( "#dialog").dialog("open");
+		});
+	
+});

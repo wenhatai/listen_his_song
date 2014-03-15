@@ -1,0 +1,106 @@
+﻿<?PHP
+require_once("class.base.php");
+
+class User extends Conn{
+	private $uid = 0;
+	
+	// 构造函数
+	function __construct($uid){
+		parent::__construct();
+		$this->uid = $uid;
+	}
+	
+	// 用户听了从SOSO或者DB上发现的一首新歌
+	function listenANewSong($sid){
+		$sql = "INSERT INTO user_song(sid, openid) VALUES(?, ?)";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("is", $sid, $this->uid);
+		$stmt->execute();
+		$stmt->close();
+		return $this->mysqli->insert_id;		
+	}
+	
+	function getSongsList(){
+		$ret = array();
+		$sql1 = "SELECT user_song.id, song.name, song.singer, song.src, song.album FROM song, user_song WHERE song.sid = user_song.sid AND user_song.openid=? ORDER BY times_5d,times_10d,times_15d,times_30d DESC";
+		$stmt = $this->mysqli->prepare($sql1);
+		$stmt->bind_param("s", $this->uid);
+		$stmt->execute();
+		$stmt->bind_result($usid, $sname, $singer, $src, $album);
+		$i = 0;
+		$ret['songs'] = array();
+		while($stmt->fetch()){
+			$ret['songs'][$i] = array();
+			$ret['songs'][$i]['usid'] = $usid;
+			$ret['songs'][$i]['name'] = $sname;
+			$ret['songs'][$i]['singer'] = $singer;
+			$ret['songs'][$i]['src'] = $src;
+			$ret['songs'][$i]['album'] = $album;
+			$i++;
+		}
+		$ret['num'] = $i;
+		$stmt->close();
+		return $ret;
+	}
+
+	// 插入新用户的默认音乐流派到数据库users_genre中
+	function insert_genre(){
+	    $sql = "INSERT INTO user_genre (name,user_id) VALUES (?, ?)";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("si", $this->name, $this->uid);
+		$stmt->execute();
+		$stmt->close(); 
+	}
+	
+	//从数据库fgroup获取好友自定义好友列表
+	function fgrouplist($openid){
+		$i=0;
+		$group=false;
+		$sql = "SELECT id,name FROM fgroup WHERE openid=?";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("s", $openid);
+		$stmt->execute();
+		$stmt->bind_result($col1,$col2);
+		while($stmt->fetch()){
+			$group['id'][$i]=$col1;
+			$group['name'][$i]=$col2;
+			$i++;
+		}
+		$stmt->close();
+		return $group;
+	}	
+	
+	//从数据库中获取好友然后添加到相应的列表中
+	function friendgroup($allgid){
+		$i=0;
+		$gid=explode("<tr>",$allgid);
+		$fid=false;
+		for($j=0;$j<count($gid)-1;$j++){
+			$id=(int)$gid[$j];
+			$sql = "SELECT fopenid FROM friend WHERE jid=?";
+			$stmt = $this->mysqli->prepare($sql);
+			$stmt->bind_param("i", $id);
+			$stmt->execute();
+			$stmt->bind_result($col1);
+			while($stmt->fetch()){
+				$fid[$id][$i]=$col1;
+				$i++;
+			}
+			$stmt->close();
+		}
+		return $fid;
+	}
+	
+	function __get($property){
+		if(isset($this->$property)){
+			return $this->$property;
+		} else {
+			return NULL;
+		}
+	}
+		
+	function __set($property, $value){
+		$this->$property = $value;
+	}
+}
+?>

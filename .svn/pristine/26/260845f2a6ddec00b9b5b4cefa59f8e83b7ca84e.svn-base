@@ -1,0 +1,30 @@
+<?php
+require_once("../../modules/class.song.php");
+require_once("../../modules/class.user.php");
+require_once("../../modules/class.listenedSong.php");
+
+$uid = $_REQUEST['openid'];
+$newSong = array();
+$newSong['name'] = $_REQUEST['sname'];
+$newSong['singer'] = $_REQUEST['singer'];
+if($_REQUEST['album'] != "none"){
+	$newSong['album'] = $_REQUEST['album'];
+}
+$newSong['src'] = $_REQUEST['src'];
+
+$song = new Song();
+$sid = $song->isExist($newSong);
+if(!$sid){
+	$sid = $song->insert($newSong);
+}
+
+$usid = $song->is_myplaylist($sid, $uid);
+if(!$usid){
+	$user = new User($uid);
+	$usid = $user->listenANewSong($sid);
+}
+$listenedSong = new ListenedSong();
+$listenedSong->insert($usid);
+
+echo $usid;
+?>

@@ -1,0 +1,16 @@
+﻿function subs(m){
+	document.getElementById("uu").src="head/"+m;
+}
+ $(document).ready(function(){
+	$.ajax({
+		url:"userhead.php",
+		type:"POST",
+		success:function(data){
+			var num=data.split("|");
+			var image=data.split("!");
+			for(var i=1;i<num[0];i++){
+				$("#head").append("<option value="+ image[i+1] +">头像"+ i +"</option>");
+			}
+		}
+	});
+});

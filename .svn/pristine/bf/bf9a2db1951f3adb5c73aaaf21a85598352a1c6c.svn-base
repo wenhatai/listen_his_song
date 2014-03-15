@@ -1,0 +1,48 @@
+﻿
+$(document).ready(function(){
+   $("#delete").click(function(){
+     var o=document.getElementById("list_all");
+	 var num=o.children.length;
+	 var idarray="";
+	 var k=0;
+	 for(var i=0;i<num;i++)
+	 {
+	    if(o.children[i].className=="onthis")
+		{
+            k++;
+		   idarray=idarray+"|"+o.children[i].id
+		}
+	 }
+	  if(k==0)
+	  {
+	      alert("请在列表中选择您要删除的歌曲！");
+	  }
+	  else
+	  {
+	    $.ajax({
+		  url:"p/deletesong.php",
+		  method:"post",
+		  data:{"idarray":idarray},
+		});
+	      var string=idarray.split("|");
+		  var array= new Array();
+		  for(i=0;i<k;i++)
+		   {
+		     array[i]=string[i+1];  //把点击了的歌曲的id收集起来，并每个放在数组array中
+		   }
+		  
+         var  m=document.getElementById("list_all");
+         var  l=m.children.length;
+         for(var i=0;i<l;i++)
+         {
+		    if(m.children[i].className=="onthis")
+               {
+			      m.removeChild(m.children[i]);
+				  l--;
+               }			   
+         }	
+		 
+	  }
+	  
+   });
+});

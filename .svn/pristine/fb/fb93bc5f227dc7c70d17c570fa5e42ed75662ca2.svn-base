@@ -1,0 +1,219 @@
+﻿/*
+ * 封装openapi的所有ajax初始化请求。
+ *
+ * Url类，封装了对url的解读，能从当前url里面获取
+ * openid、openkey、pf等参数
+ *
+ * @函数 getAppFriends:ajax请求获取使用此应用的好
+ * 友，在ajax获取个人信息后立即调用。
+ *
+ * @函数 findGroups:ajax请求获取用户的所有分组，在
+ * getAppFriends调用成功后立即调用。
+ *
+ * @函数 findFriendByFid:根据fopenid获取好友的信息
+ * 说明一点，在getAppFriends调用后，所有的好友信息
+ * 的json对象都保存在全局变量friends里面。
+ *
+ */
+function Url(){
+	url = location.href;
+	this.getHttpParams = function(name)
+	{
+        var r = new RegExp("(\\?|#|&)"+name+"=([^&#]*)(&|#|$)");
+        var m = url.match(r);
+        return decodeURIComponent(!m?"":m[2]);
+	}
+}
+urlObj = new Url();
+openid = urlObj.getHttpParams("openid");
+openkey = urlObj.getHttpParams("openkey");
+pf = urlObj.getHttpParams("pf");
+if(pf == ""){
+	pf = "qzone";
+}
+
+var friends;
+
+function enableDragAndDrop(){
+	$("ul.list > li").draggable({
+		revert: "invalid",
+		appendTo: "body",
+		opacity: 0.35,
+		containment: $( "#demo-frame" ).length ? "#demo-frame" : "document",
+		helper: "clone",
+		cursor: "move"
+	});
+	
+	$("#friendUl > li").droppable({
+		accept: "ul.list li",
+		drop: function( event, ui ) {
+			var fromId = $(ui.draggable).parent()[0].id;
+			var $this = $(this);
+			var $thisUl = $this.find("ul")[0];
+			var toId = $thisUl.id;
+			var userOpenid = ui.draggable[0].id.split('_')[1];
+			if(toId == "allfriends" || userOpenid == openid){
+				return;
+			}
+			//先检查这个组内是否已经存在
+			var i;
+			var children = $($thisUl).children("li");
+			for(i = 0; i < children.length; i++){
+				if(userOpenid == children[i].id.split('_')[1]){
+					//若该组已经有这个好友了
+					return;
+				}
+			}
+			$.ajax({
+				url:"p/addfriend.php",
+				method:"POST",
+				data:{"gid":toId.split('_')[1], "fopenid":userOpenid},
+				success:function(data){
+					$this.find( ".placeholder" ).remove();
+					$($thisUl).append($(ui.draggable).clone());
+					enableDragAndDrop();
+				},
+				error:function(jqXHR, textStatus, errorThrown){
+					alert("服务器忙，请稍候尝试！");
+				}
+			});
+		}
+	});
+}
+
+function appendFriend(gid, friend){
+	if(gid==0){		//表明是allfriends组
+		$("#allfriends").append("<li id='"+gid+"_"+friend.openid+
+			"' class='ui-widget-content ui-corner-tr ui-draggable'><img src='"
+			+friend.figureurl+"'/><span>"+friend.nickname+"</li>");
+	} else {
+		$("#group_" + gid).append("<li id='"+gid+"_"+friend.openid+
+			"' class='ui-widget-content ui-corner-tr ui-draggable'><img src='"
+			+friend.figureurl+"'/><span>"+friend.nickname+
+			"</span><a class='removefriend' href=\"#\">&times;</a></li>");
+	}
+}
+	
+function createGroup(groupname){
+	$.ajax({
+		url:"p/addgroup.php",
+		method:"POST",
+		data:{'openid':openid, 'groupname':groupname},
+		success:function(data){
+			alert(data);
+		}
+	});
+}
+
+function findGroups(){
+	$.ajax({
+		url:"p/findGroups.php",
+		method:"POST",
+		data:{"myopenid":openid},
+		dataType:"json",
+		success:function(groups){
+			var i, j;
+			for(i = 0; i < groups.length; i++){
+				$("#friendlist ul:first").append("<li class='grouping' id='groupid_"+groups[i].id+"'><span class='friendtitle'>"+
+					groups[i].name+"</span><ul class='list' id='group_"+groups[i].id+"'></ul></li>");
+				for(j = 0; j < groups[i].friends.length; j++){
+					var friend = findFriendByFid(groups[i].friends[j].openid);
+					appendFriend(groups[i].id, friend);
+				}
+			}
+			enableDragAndDrop();
+		}
+	});
+}
+function getAppFriends(){
+	$.ajaxSetup({
+		async: false
+	});
+	$.ajax({
+		url:"openapi-3.0.2/get_app_friends.php",
+		method:"GET",
+		data:{
+			"openid":openid, 
+			"openkey":openkey, 
+			"pf":pf
+		},
+		dataType:"json",
+		success:function(data){
+			if(data.ret != 0){
+				getAppFriends();
+				return;
+			}
+			friends = data;
+			var i;
+			for(i=0; i< friends.items.length; i++){
+				appendFriend(0, friends.items[i]);
+			}
+			findGroups();
+		}
+	});
+}
+
+function findFriendByFid(fid){
+	var i;
+	for(i = 0; i < friends.items.length; i++){
+		if(friends.items[i].openid == fid){
+			return friends.items[i];
+		}
+	}
+}
+
+function punblishtapp(){
+		var pf2="tapp";
+		var content=tapp.content.value;
+		$.ajax({
+		url:"openapi-3.0.2/add_tapp.php",
+		method:"GET",
+		data:{
+			"openid":openid, 
+			"openkey":openkey, 
+			"pf":pf2,
+			"content":content
+		},
+		success:function(data){
+			alert("微博发表成功！");
+		}
+	});
+	return false;
+}
+
+
+function getMyInfo(){
+	$.ajax({
+		url:"openapi-3.0.2/get_user_info.php",
+		method:"GET",
+		data:{
+			"openid":openid, 
+			"openkey":openkey, 
+			"pf":pf
+		},
+		dataType:"json",
+		success:function(myinfo){
+			if(myinfo.ret != 0){
+				getMyInfo();
+				return;
+			}
+			$("#allfriends").append("<li id='0_"+openid+"' class='ui-widget-content ui-corner-tr'><img src='"+
+				myinfo.figureurl+"'/><span>"+myinfo.nickname+"</span></li>");
+			getAppFriends();
+		}
+	});
+}
+
+getMyInfo();
+
+$(document).ready(function(){
+	$("#invite").click(function(){
+		fusion2.dialog.invite({
+			msg:"邀请你来玩~",
+			context:"invite",
+			onSuccess:function(opt){
+				alert("邀请成功"+opt.context);
+			}
+		});
+	});
+});

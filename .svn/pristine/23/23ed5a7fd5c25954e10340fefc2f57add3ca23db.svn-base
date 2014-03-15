@@ -1,0 +1,57 @@
+﻿$(document).ready(function(){
+	alert("hello!!!");
+	$("#add").click(function(){
+		var addgenre=prompt("请输入要添加的流派");
+		if(addgenre==""){
+			alert("添加流派不能为空！");
+			return ;
+		}
+	$.ajax({
+			url:"addgenre.php",
+			type:"POST",
+			data:{"add":addgenre},
+			success:function(data){
+				alert(data);
+			}
+		});
+	});
+	$("#mod").click(function(){
+		var oldgenre=document.getElementById("genre").value;
+		if(oldgenre=="0"){
+			alert("请选择流派");
+			return ;
+		}
+		var newgenre=prompt("请输入新流派名");
+		if(confirm("确定要修改吗")==false){
+			return ;
+		}
+		$.ajax({
+			url:"modgenre.php",
+			type:"POST",
+			data:{"old":oldgenre,"new":newgenre},
+			success:function(data){
+				alert(data);
+				return ;
+			}
+		});
+	});
+	$('#del').click(function(){
+		var delgenre=document.getElementById("genre").value;
+		if(delgenre=="0"){
+			alert("请选择流派");
+			return ;
+		}
+		if(confirm("确定要删除吗")==false){
+			return ;
+		}
+		$.ajax({
+			url:"delgenre.php",
+			type:"POST",
+			data:{"del":delgenre},
+			success:function(data){
+				alert(data);
+				return ;
+			}
+		});
+	});
+});

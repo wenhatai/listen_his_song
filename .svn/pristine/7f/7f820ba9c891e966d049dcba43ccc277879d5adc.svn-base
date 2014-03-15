@@ -1,0 +1,24 @@
+#container {
+            text-align : center;
+            width : 500px;
+            height : 500px;
+            border : 1px solid blue;
+            margin : 0 auto;
+             
+        }
+        .skin {
+            width : 100px;
+            border : 1px solid gray;
+            padding : 2px;
+            position : absolute;
+            visibility: hidden;
+        }
+        div.menuitems {
+            margin : 1px 0;
+        }
+        div.menuitems a {
+            text-decoration : none;
+        }
+        div.menuitems:hover {
+            background-color : #c0c0c0;
+        }

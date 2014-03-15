@@ -1,0 +1,37 @@
+<?php
+require_once("class.base.php");
+require_once("class.friend.php");
+
+class Group extends Conn{
+	
+	function insert($openid, $groupName){
+	    $sql = "INSERT INTO fgroup (openid,name) VALUES (?, ?)";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("ss", $openid, $groupName);
+		$stmt->execute();
+		$stmt->close();
+		$this->uid = $this->mysqli->insert_id;
+		return $this->uid;
+	}
+	
+	function getMyGroups($myopenid){
+		$result = array();
+		$friend = new Friend();
+		$sql = "SELECT id,name FROM fgroup WHERE openid = ?";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("s", $myopenid);
+		$stmt->execute();
+		$stmt->bind_result($gid, $gname);
+		$i = 0;
+		while($stmt->fetch()){
+			$result[$i] = array();
+			$result[$i]['id'] = $gid;
+			$result[$i]['name'] = $gname;
+			$result[$i]['friends'] = $friend->findFriendsInGroup($gid);
+			$i++;
+		}
+		$stmt->close();
+		return $result;
+	}
+}
+?>

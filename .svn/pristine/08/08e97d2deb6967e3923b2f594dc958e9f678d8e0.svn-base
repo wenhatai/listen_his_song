@@ -1,0 +1,11 @@
+$(document).ready(function(){
+		$('.grouping').dblclick(function(){
+			if($(this).find('.list').css("display") == "block"){
+				$(this).removeClass('choose');
+				$(this).find('.list').hide(300);
+			}else{
+				$(this).addClass('choose');
+				$(this).find('.list').show(300);
+			}					
+			});
+});

@@ -1,0 +1,198 @@
+﻿<?PHP
+require_once("class.base.php");
+
+class User extends Conn{
+	private $uid = 0;
+	
+	// 构造函数
+	function __construct($uid){
+		parent::__construct();
+		$this->uid = $uid;
+	}
+	
+	// 用户听了从SOSO或者DB上发现的一首新歌
+	function listenANewSong($sid){
+		$sql = "INSERT INTO user_song(sid, openid) VALUES(?, ?)";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("is", $sid, $this->uid);
+		$stmt->execute();
+		$stmt->close();
+		return $this->mysqli->insert_id;		
+	}
+	
+	// 获取用户的播放列表
+	function getSongsList(){
+		$ret = array();
+		$sql1 = "SELECT user_song.id, song.name, song.singer, song.src, song.album ".
+				"FROM song, user_song ".
+				"WHERE song.sid = user_song.sid ".
+				"AND user_song.openid=? ".
+				"AND user_song.flag = 1 ".
+				"ORDER BY times_5d,times_10d,times_15d,times_30d DESC";
+		$stmt = $this->mysqli->prepare($sql1);
+		$stmt->bind_param("s", $this->uid);
+		$stmt->execute();
+		$stmt->bind_result($usid, $sname, $singer, $src, $album);
+		$i = 0;
+		$ret['songs'] = array();
+		while($stmt->fetch()){
+			$ret['songs'][$i] = array();
+			$ret['songs'][$i]['usid'] = $usid;
+			$ret['songs'][$i]['name'] = $sname;
+			$ret['songs'][$i]['singer'] = $singer;
+			$ret['songs'][$i]['src'] = $src;
+			$ret['songs'][$i]['album'] = $album;
+			$i++;
+		}
+		$ret['num'] = $i;
+		$stmt->close();
+		return $ret;
+	}
+	
+	//通过歌曲名，歌手名获取我的播放列表中唯一的一首歌
+	//假设这首歌肯定存在，且只存在一首，事实上也是如此
+	function getSong($sname, $singer){
+		$sql = "SELECT user_song.id FROM song,user_song WHERE song.sid = user_song.sid ".
+											"AND user_song.openid = ? ".
+											"AND song.name = ? ".
+											"AND song.singer = ?";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("sss", $this->uid, $sname, $singer);
+		$stmt->execute();
+		$stmt->bind_result($usid);
+		$ret = null;
+		if($stmt->fetch()){
+			$ret = $usid;
+		}
+		$stmt->close();
+		return $ret;
+	}
+
+	function deleteSong($sname, $singer){
+		$usid = null;
+		$times_30d = null;
+		$sql = "SELECT user_song.id, times_30d ".
+					"FROM song,user_song ".
+					"WHERE song.sid = user_song.sid ".
+					"AND user_song.openid = ? ".
+					"AND song.name = ? ".
+					"AND song.singer = ?";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("sss", $this->uid, $sname, $singer);
+		$stmt->execute();
+		$stmt->bind_result($usid, $times_30d);
+		$ret = null;
+		if(!$stmt->fetch()){
+			return;
+		}
+		$stmt->close();
+		if($times_30d > 0){
+			$sql = "UPDATE user_song ".
+					"SET flag = 0 ".
+					"WHERE id = ?";
+			$stmt = $this->mysqli->prepare($sql);
+			$stmt->bind_param("i", $usid);
+			$stmt->execute();
+			$stmt->close();
+		} else {
+			$sql = "DELETE FROM listened_song WHERE usid = ?";
+			$stmt = $this->mysqli->prepare($sql);
+			$stmt->bind_param("i", $usid);
+			$stmt->execute();
+			$stmt->close();
+			
+			$sql = "DELETE FROM user_song WHERE id = ?";
+			$stmt = $this->mysqli->prepare($sql);
+			$stmt->bind_param("i", $usid);
+			$stmt->execute();
+			$stmt->close();
+		}
+	}
+	
+	function getRecentSongs($days){
+		$sql = "SELECT song.sid,song.name,song.singer,song.src,song.album ".
+					"FROM user_song,song ".
+					"WHERE user_song.openid = ? ".
+					"AND user_song.sid = song.sid ".
+					"AND $days > 0 ".
+					"ORDER BY $days DESC";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("s", $this->uid);
+		$stmt->execute();
+		$stmt->bind_result($sid, $sname, $singer, $src, $album);
+		$i = 0;
+		$ret = array();
+		while($stmt->fetch()){
+			$ret[$i] = array();
+			$ret[$i]['sid'] = $sid;
+			$ret[$i]['name'] = $sname;
+			$ret[$i]['singer'] = $singer;
+			$ret[$i]['src'] = $src;
+			$ret[$i]['album'] = $album;
+			$i++;
+		}
+		$ret['num'] = $i;
+		$stmt->close();
+		return $ret;
+	}
+	
+	function findSongBack($usid){
+		$sql = "UPDATE user_song SET flag = 1 WHERE id = ?";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("i", $usid);
+		$stmt->execute();
+		$stmt->close();
+	}
+	
+	//从数据库fgroup获取好友自定义好友列表
+	function fgrouplist($openid){
+		$i=0;
+		$group=false;
+		$sql = "SELECT id,name FROM fgroup WHERE openid=?";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("s", $openid);
+		$stmt->execute();
+		$stmt->bind_result($col1,$col2);
+		while($stmt->fetch()){
+			$group['id'][$i]=$col1;
+			$group['name'][$i]=$col2;
+			$i++;
+		}
+		$stmt->close();
+		return $group;
+	}	
+	
+	//从数据库中获取好友然后添加到相应的列表中
+	function friendgroup($allgid){
+		$i=0;
+		$gid=explode("<tr>",$allgid);
+		$fid=false;
+		for($j=0;$j<count($gid)-1;$j++){
+			$id=(int)$gid[$j];
+			$sql = "SELECT fopenid FROM friend WHERE jid=?";
+			$stmt = $this->mysqli->prepare($sql);
+			$stmt->bind_param("i", $id);
+			$stmt->execute();
+			$stmt->bind_result($col1);
+			while($stmt->fetch()){
+				$fid[$id][$i]=$col1;
+				$i++;
+			}
+			$stmt->close();
+		}
+		return $fid;
+	}
+	
+	function __get($property){
+		if(isset($this->$property)){
+			return $this->$property;
+		} else {
+			return NULL;
+		}
+	}
+		
+	function __set($property, $value){
+		$this->$property = $value;
+	}
+}
+?>

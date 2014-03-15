@@ -1,0 +1,38 @@
+﻿$(document).ready(function(){
+  $("#out").click(function(){
+     window.location=" http://localhost/listen-his-songs/user/theme.html";
+	 });
+  $("#search2").click(function(){
+     window.location="http://localhost/listen-his-songs/user/searchsong.html";
+	 });
+  $("#searchsong").click(function(){
+     var name = $("#name").val();
+	 if(name=="")
+	 {
+	   alert("曲名不能为空！");
+	   return;
+	 }
+	$.ajax({
+		url:"../p/searchsong.php",
+		type:"POST",
+		data:{"name2":name},
+		success:function(data){
+			var fri1=data.split("!");
+			var num=parseInt(fri1[0]);
+			if(num==0)
+			{
+			   alert("对不起，未查到相应曲目！");
+			}
+			else
+			{
+			var fri=fri1[1];
+			var fri2=fri.split("|");
+			$("#song").append("<tr><th>歌曲序列</th><th>曲目</th></tr>");   
+			for(var i=0; i<num; i++){ 
+					$("#song").append("<tr><td id=fri2[i+1]>"+fri2[i+1]+"</td><td id=fri2[i+1+num]>"+fri2[i+1+num]+"</td></tr>");  
+			}
+			}
+		}
+	});
+  });
+});

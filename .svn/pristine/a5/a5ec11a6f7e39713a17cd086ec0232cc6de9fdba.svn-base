@@ -1,0 +1,16 @@
+<?php 
+	require_once("../modules/class.song.php");
+	session_start();
+	if(isset($_SESSION['uid'])){
+		$uid=$_SESSION['uid'];
+		$song=new Song();
+		$name=$song->usergenre($uid);
+		if($name==false){
+			echo "error!";
+		}
+	}
+	echo count($name)."!";
+	foreach($name as $sname){
+		echo $sname."!";		
+	}
+?>

@@ -1,0 +1,59 @@
+﻿
+$(document).ready(function(){
+ $("#search-text").click(function(){
+  var opanel1 = document.getElementById("search-text"); 
+   opanel1.value="";
+ });
+  $("#search-sub").click(function(){
+   document.getElementById('playlist').style.display ="none";
+   document.getElementById('list_all').style.display ="block";
+
+ var search1 = document.getElementById("search-text");
+     myPlayerlist.remove(); 
+    var songname = search1.value;
+	  if(songname=="")
+	 {
+	   alert("曲名不能为空！");
+	   return;
+	 }
+	  	$.ajax({
+		url:"p/searchsong_index.php",
+		type:"POST",
+		data:{"name":songname},
+		success:function(data){
+			data = data.replace(/(^\s*)/g, "");
+			var fri1=data.split("!");
+			var num=parseInt(fri1[0]);
+			if(num == 0)
+			{
+               $("#list_all").append("<li id='not' class='jp-playlist-item' >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+
+			   "对不起 ！&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 未搜索到相关歌曲！&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+
+			   "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>");
+			}
+			else
+			{
+			var fri=fri1[1];
+			var fri2=fri.split("|");
+			//  $("#list_all").append("<li id='listtitle' class='jp-playlist-item' ><span class='list1'>歌名</span><span class='list2'>歌手</span><span class='list3'>流派</span></li>");   
+			/*for(var i=0; i<num; i++){
+                 if(i % 2==0)
+                  {				 
+					$("#list_all").append("<li class='jp-playlist-item'  id="+fri2[i+3*num]+"><span class='list1'>"+fri2[i]+"</span><span class='list2'>"+fri2[i+2*num]+"</span><span class='list3'>"+fri2[i+num]+"</span></li>");  
+				  }
+				  else{
+				    $("#list_all").append("<li class='jp-playlist-item'  id="+fri2[i+3*num]+"><span class='list1'>"+fri2[i]+"</span><span class='list2'>"+fri2[i+2*num]+"</span><span class='list3'>"+fri2[i+num]+"</span></li>"); 
+				  }
+			}*/
+			  for(var i=0; i<num; i++){
+				myPlayerlist.add({
+					title:fri2[i],
+					free: true,
+					mp3:"music/"+fri2[i+3*num]+"song.mp3",
+				});			
+			}
+			  
+		   }
+		}
+	});
+ });
+});

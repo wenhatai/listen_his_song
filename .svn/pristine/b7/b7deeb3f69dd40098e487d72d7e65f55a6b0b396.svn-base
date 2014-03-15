@@ -1,0 +1,10 @@
+﻿<?php
+require_once("../modules/class.search.php");
+
+$uid=$_REQUEST['openid'];
+$search=new Search();
+$days=$_REQUEST['days'];
+$ret = $search->getsongs_bydays($uid,$days);
+
+echo json_encode($ret);
+?>

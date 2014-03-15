@@ -1,0 +1,15 @@
+<?php 
+	require_once("../modules/class.search.php");
+	session_start();
+		$uid=$_SESSION['uid'];
+		$search=new Search();
+		$n=$search->friends($uid);
+		echo $n."!" ;
+		echo $_SESSION['uid']."|";
+		for($i=0;$i<$n;$i++){
+			echo $search->userfri[$i]."|";
+		}
+		for($i=0;$i<$n;$i++){
+			echo $search->friname[$i]."|";
+		}
+?>

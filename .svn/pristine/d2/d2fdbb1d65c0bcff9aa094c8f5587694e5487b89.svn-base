@@ -1,0 +1,70 @@
+﻿var playlist =$( 
+	[{
+		title:"Cyber Sonnet",
+		artist:"saber",
+		mp3:"http://www.jplayer.org/audio/mp3/TSP-07-Cybersonnet.mp3",
+	},{
+		title:"Sakura's Theme",
+		free:true,
+		artist:"saber",
+		mp3:"music/最二陈宏智.mp3"
+	}]
+);
+
+var myPlayerlist;
+
+$(document).ready(function(){
+	myPlayerlist = new jPlayerPlaylist(
+	{
+		jPlayer: "#jquery_jplayer_1",
+		cssSelectorAncestor: "#jp_container_1"
+	}, 
+	playlist, 
+	{
+		playlistOptions: {
+			autoPlay: false,
+			loopOnPrevious: true,
+			shuffleOnLoop: true,
+			enableRemoveControls: true,
+		},
+		swfPath: "js/Jplayer.swf",
+		supplied: "mp3",
+		verticalVolume: true,
+		volume: 0.75,
+		wmode: "window"
+	});
+
+	$("#list_all").live("click",function(){
+		var id=window.event.srcElement.id.substring(4);
+		if(isNaN(id)){
+			return ;
+		}
+		if(id=="")
+			return ;
+		$.ajax({
+			url:"p/clickingsong.php",
+			type:"POST",
+			data:{"id":id,"openid":openid},
+			success:function(data){
+				if(!isNaN(data)){
+					myPlayerlist.play(data);
+					return ;
+				}
+				var song = eval('(' + data + ')');
+				title=song.name.split(".");
+				var path="music/"+song.name;
+				playlist.add({
+					title:title[0],
+					free: true,
+					mp3:path,
+				});
+				myPlayerlist.add({
+					title:title[0],
+					free: true,
+					mp3:path,
+				});
+				myPlayerlist.play(-1);
+			}
+		});
+	});
+});

@@ -1,0 +1,14 @@
+function changdiv(index){
+	switch(index){
+		case 1:{
+		document.getElementById('playlist').style.display ="";
+		document.getElementById('list_all').style.display ="none";
+		break;
+		}
+		case 2:{
+		document.getElementById('playlist').style.display ="none";
+		document.getElementById('list_all').style.display ="";
+		break;
+		}
+	}
+}

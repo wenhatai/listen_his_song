@@ -1,0 +1,10 @@
+﻿<?php
+require_once("../modules/class.search.php");
+
+$openid = $_REQUEST['openid'];
+$search = new Search();
+
+$ret = $search->songListOfUser($openid);
+	
+echo json_encode($ret);
+?>

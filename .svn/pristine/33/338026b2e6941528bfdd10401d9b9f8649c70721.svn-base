@@ -1,0 +1,36 @@
+<?php
+include("config.php");
+
+class Tool{
+	private $mysqli;
+
+	// 构造函数
+	function __construct(){
+		$this->mysqli = new mysqli($GLOBALS['address'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['schema']);
+		if($this->mysqli->connect_errno){
+			echo "Connect failed:%s\n".$this->mysqli->connect_error();
+			exit();
+		}
+		$this->mysqli->query("set names utf8");
+		$this->mysqli->query("set character_set_results=GBK");
+		//$this->mysqli->query("set character_set_client=GBK");
+	}
+	
+	// 析构函数
+	function __destruct(){
+		if($this->mysqli){
+			$this->mysqli->close();
+		}
+	}
+	
+	function addGroup($openid, $groupName){
+	    $sql = "INSERT INTO fgroup (openid,name) VALUES (?, ?)";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("ss", $openid, $groupName);
+		$stmt->execute();
+		$stmt->close();
+		$this->uid = $this->mysqli->insert_id;
+		echo $this->uid;
+	}
+}
+?>

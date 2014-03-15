@@ -1,0 +1,17 @@
+1@addfriend.php:处理一个好友分组添加一个好友 openapi.js:addFriendOnServer(gid, fopenid, $dist, $distUl)
+1@removefriend.php:将一个好友从一个分组中删除掉 main.js:removeFriendOnServer(friendElemId)
+
+1@addgroup.php:处理用户新建一个好友分组时，添加一个分组 main.js:createGroupOnServer(groupname)
+1@deletegroup.php:用户删除一个分组时 main.js:$('li.grouping').contextMenu
+1@renamegroup.php:用户重命名一个分组时 main.js:renameGroupOnServer(groupid,newGroupName)
+1@findGroups.php:用户获取自己的所有分组以及分组里面的好友fid openapi.js:getGroups(callback)
+
+1@addsongtimes.php:记录用户的听歌记录即听歌次数统计记录 jplayer.js:saveSongListenedRecordOnServer
+
+1@deletesong.php:用户批量删除歌曲列表当中的歌曲时 jplayer.js:$("#delete").click
+
+1@showsong_byrate.php:获取一个好友最近N天听的歌曲排行 jplayer.js:$("#last").change
+
+1@showsong_whenin.php:获取用户播放列表 jplayer.js:getMySongList()
+
+uploadify.php:上传歌曲，以后将不会用到 main.js

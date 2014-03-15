@@ -1,0 +1,86 @@
+﻿<?PHP
+require_once("class.base.php");
+
+class User extends Conn{
+	private $uid = 0;
+	private $name;
+	private $pass;
+	private $registTime;
+	private $friends = NULL;
+	
+	// 构造函数
+	function __construct($name = NULL, $pass = NULL){
+		$this->name = $name;
+		$this->pass = $pass;
+	}
+
+	// 插入新用户的默认音乐流派到数据库users_genre中
+	function insert_genre(){
+	    $sql = "INSERT INTO user_genre (name,user_id) VALUES (?, ?)";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("si", $this->name, $this->uid);
+		$stmt->execute();
+		$stmt->close(); 
+	}
+	
+	//将上传的新歌曲信息添加到自己的播放列表中
+	function upload_song($openid, $sid){
+	    $sql = "INSERT INTO user_song (openid, sid) VALUES (?, ?)";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("ss", $openid, $sid);
+		$stmt->execute();
+		$stmt->close(); 
+	}
+	
+	//从数据库fgroup获取好友自定义好友列表
+	function fgrouplist($openid){
+		$i=0;
+		$group=false;
+		$sql = "SELECT id,name FROM fgroup WHERE openid=?";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("s", $openid);
+		$stmt->execute();
+		$stmt->bind_result($col1,$col2);
+		while($stmt->fetch()){
+			$group['id'][$i]=$col1;
+			$group['name'][$i]=$col2;
+			$i++;
+		}
+		$stmt->close();
+		return $group;
+	}	
+	
+	//从数据库中获取好友然后添加到相应的列表中
+	function friendgroup($allgid){
+		$i=0;
+		$gid=explode("<tr>",$allgid);
+		$fid=false;
+		for($j=0;$j<count($gid)-1;$j++){
+			$id=(int)$gid[$j];
+			$sql = "SELECT fopenid FROM friend WHERE jid=?";
+			$stmt = $this->mysqli->prepare($sql);
+			$stmt->bind_param("i", $id);
+			$stmt->execute();
+			$stmt->bind_result($col1);
+			while($stmt->fetch()){
+				$fid[$id][$i]=$col1;
+				$i++;
+			}
+			$stmt->close();
+		}
+		return $fid;
+	}
+	
+	function __get($property){
+		if(isset($this->$property)){
+			return $this->$property;
+		} else {
+			return NULL;
+		}
+	}
+		
+	function __set($property, $value){
+		$this->$property = $value;
+	}
+}
+?>

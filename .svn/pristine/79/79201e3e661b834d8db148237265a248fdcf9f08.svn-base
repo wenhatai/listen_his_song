@@ -1,0 +1,21 @@
+<?PHP
+require_once("class.base.php");
+
+class ListenedSong extends Conn{
+	// ¹¹Ôìº¯Êý
+	function __construct(){
+		parent::__construct();
+	}
+	
+	function insert($usid){
+		$sql = "INSERT INTO listened_song(usid) VALUES(?)";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("i", $usid);
+		$stmt->execute();
+		$id = $this->mysqli->insert_id;
+		$stmt->close();
+		return $id;
+	}
+}
+
+?>

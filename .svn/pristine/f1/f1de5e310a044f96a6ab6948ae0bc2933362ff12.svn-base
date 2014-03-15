@@ -1,0 +1,36 @@
+﻿$(document).ready(function(){
+	$.ajax({
+		url:"friendrate.php",
+		type:"POST",
+		success:function(data){
+			var fri1=data.split("!");
+			var num=parseInt(fri1[0]);
+			var fri=fri1[1];
+			var fri2=fri.split("|");
+			$("#friends").append("<option value="+fri2[0]+">我</option>");   
+			for(var i=0; i<num; i++){ 
+					$("#friends").append("<option value="+fri2[i+1]+">" + fri2[i+num+1] + "</option>");  
+			}
+		}
+	});
+	$("#search1").click(function(){
+		var friendrate = $("#friends").val();
+		var songrate = $("#song1").val();
+		if(songrate==""){
+			alert("请输入要查询的歌曲");
+			return ;
+		}
+		$.ajax({
+			url:"songfriendrate.php",
+			type:"POST",
+			data:{"id":friendrate,"song":songrate},
+			success:function(data){
+				var rate=data.split("!");
+				document.write("5天内听歌频率：  "+rate[0]+"<br>");
+				document.write("10天内听歌频率： "+rate[1]+"<br>");
+				document.write("15天内听歌频率： "+rate[2]+"<br>");
+				document.write("1个月内听歌频率："+rate[3]+"<br>");
+			}
+		});
+	});
+});

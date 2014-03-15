@@ -1,0 +1,10 @@
+<?php
+require_once('../../modules/class.fgroup.php');
+if(!isset($_REQUEST['myopenid'])){
+	exit();
+}
+$myopenid = $_REQUEST['myopenid'];
+$group = new Group();
+$ret = $group->getMyGroups($myopenid);
+echo(json_encode($ret));
+?>

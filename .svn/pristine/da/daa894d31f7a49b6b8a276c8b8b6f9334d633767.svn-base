@@ -1,0 +1,183 @@
+<?php
+require_once("class.base.php");
+
+class Song extends Conn{
+	private $songName;
+	private $singerName;
+	
+	// 构造函数
+	function __construct($name=NULL, $singer=NULL){
+		parent::__construct();
+		$this->songName = $name;
+		$this->singerName = $singer;
+	}
+	
+	//插入一首新歌，该歌可以没有专辑信息，分类处理
+	function insert($song){
+		if(array_key_exists('album', $song)){
+			$sql = "INSERT INTO song (name, singer, src, album) VALUES (?, ?, ?, ?)";
+			$stmt = $this->mysqli->prepare($sql);
+			$stmt->bind_param("ssss", $song['name'], $song['singer'],
+									$song['src'], $song['album']);
+			$stmt->execute();
+			$this->uid = $this->mysqli->insert_id;
+			$stmt->close(); 
+			return $this->uid;
+		} else {
+			$sql = "INSERT INTO song (name, singer, src) VALUES (?, ?, ?)";
+			$stmt = $this->mysqli->prepare($sql);
+			$stmt->bind_param("sss", $song['name'], $song['singer'],
+									$song['src']);
+			$stmt->execute();
+			$this->uid = $this->mysqli->insert_id;
+			$stmt->close(); 
+			return $this->uid;
+		}
+	}
+	
+	// 判定一首歌是否存在，若存在返回sid
+	function isExist($song){
+		$ret = false;
+		if(array_key_exists('album', $song)){
+			$sql = "SELECT sid FROM song WHERE name = ? AND singer = ? AND album = ?";
+			$stmt = $this->mysqli->prepare($sql);
+			$stmt->bind_param("sss", $song['name'], $song['singer'],
+									$song['album']);
+			$stmt->execute();
+			$stmt->bind_result($col);
+			if($stmt->fetch()){
+				$ret = $col;
+			}
+			$stmt->close(); 
+		} else {
+			$sql = "SELECT sid FROM song WHERE name = ? AND singer = ? AND album is null";
+			$stmt = $this->mysqli->prepare($sql);
+			$stmt->bind_param("ss", $song['name'], $song['singer']);
+			$stmt->execute();
+			$stmt->bind_result($col);
+			if($stmt->fetch()){
+				$ret = $col;
+			}
+			$stmt->close(); 
+		}
+		return $ret;
+	}
+	
+	//查询我的播放列表中是否存在这首歌，若存在则返回usid
+	function is_myplaylist($sid,$openid){
+		$ret = false;
+		$sql = "SELECT id FROM user_song WHERE openid = ? AND sid = ?";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("si",$openid, $sid);
+		$stmt->execute();
+		$stmt->bind_result($col);
+		if($stmt->fetch()){
+			$ret = $col;
+		}
+		$stmt->close();
+		return $ret;
+	}
+	
+	function search($input){
+		$ret = array();
+		$params = split('\s', $input);
+		$sql = "SELECT sid,name,singer,album,src FROM song WHERE name LIKE ? OR singer LIKE ? OR album LIKE ? LIMIT 30";
+		foreach ($params as $param){
+			$param = '%'.$param.'%';
+			$stmt = $this->mysqli->prepare($sql);
+			$stmt->bind_param("sss", $param, $param, $param);
+			$stmt->execute();
+			$stmt->bind_result($sid, $name, $singer, $album, $src);
+			while($stmt->fetch()){
+				if(!isset($ret[$sid])){
+					$ret[$sid] = array();
+					$ret[$sid]['sid'] = $sid;
+					$ret[$sid]['name'] = $name;
+					$ret[$sid]['singer'] = $singer;
+					$ret[$sid]['album'] = $album;
+					$ret[$sid]['src'] = $src;
+				}
+			}
+			$stmt->close();	
+		}
+		return $ret;
+	}
+	
+     //通过sid把某首听了的歌听歌次数加1
+    function addsongtimes($sid)
+     {
+		$sql = "UPDATE user_song SET times_5d=times_5d+1 WHERE sid=?";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("i",$sid);
+		$stmt->execute();
+		$stmt->close();
+		return true;
+     }	 
+	 
+	//通过点击好友id获取好友的歌
+	function friendsongs($id){
+		$result = array();
+		$song=new Song();
+		$i=0;
+		$sql="SELECT sid,times_5d,times_10d,times_15d,times_30d FROM user_song WHERE openid=?";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("s",$id);
+		$stmt->execute();
+		$stmt->bind_result($col1,$col2,$col3,$col4,$col5);
+		while($stmt->fetch()){
+			$result[$i]['sid']=$col1;
+			$result[$i]['5d']=$col2;
+			$result[$i]['10d']=$col3;
+			$result[$i]['15d']=$col4;
+			$result[$i]['30d']=$col5;
+			$result[$i]['song']=$song->song_info($col1);
+			$i++;
+		}
+		$result['num'] = $i;
+		$stmt->close();
+		return $result;
+	}
+	
+	
+	
+	//得到歌曲信息
+	function song_info($sid){
+		$result=array();
+		$sql="SELECT name,singer,genre_name FROM song WHERE sid=?";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("i",$sid);
+		$stmt->execute();
+		$stmt->bind_result($col1,$col2,$col3);
+		if($stmt->fetch()){
+			$result['name']=$col1;
+			$result['singer']=$col2;
+			$result['genre']=$col3;
+		}
+		$stmt->close();
+		return $result;
+	}
+	
+	//将好友列表中的歌曲的信息加入到自己的播放列表中
+	function add_myplaylist($openid,$sid){
+		$initial=1;
+		$sql = "INSERT INTO user_song (openid,sid,times_5d,times_10d,times_15d,times_30d) VALUES (?,?,?,?,?,?)";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("siiiii",$openid,$sid,$initial,$initial,$initial,$initial);
+		$stmt->execute();
+		$stmt->close();
+		return true;
+	}
+	
+	function __get($property){
+		if(isset($this->$property)){
+			return $this->$property;
+		} else {
+			return NULL;
+		}
+	}
+		
+	function __set($property, $value){
+		$this->$property = $value;
+	}
+}
+?>

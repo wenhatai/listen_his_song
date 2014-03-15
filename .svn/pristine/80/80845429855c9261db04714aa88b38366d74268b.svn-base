@@ -1,0 +1,21 @@
+﻿<?php
+require_once("../modules/class.search.php");
+$uid=$_REQUEST['openid'];
+$ret = array();
+$search=new Search();
+$days="five";
+$n=$search->getsongs_bydays($uid,$days);
+//echo $n."!" ;
+$ret['num'] = $n;
+$ret['songs'] = array();
+for($i=0;$i<$n;$i++){
+	$search->getsongnameBysid($search->songsid[$i]);
+	//echo $search->songname[0]."|";
+	$ret['songs'][$i] = array();
+	$ret['songs'][$i]['name'] = $search->songname[0];
+	$ret['songs'][$i]['genre'] = $search->songgenre[0];
+	$ret['songs'][$i]['singer'] = $search->songsinger[0];
+	$ret['songs'][$i]['sid'] = $search->songsid[$i];
+}
+echo json_encode($ret);
+?>

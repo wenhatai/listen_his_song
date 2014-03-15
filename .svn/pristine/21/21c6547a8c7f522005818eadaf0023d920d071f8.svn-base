@@ -1,0 +1,13 @@
+<?
+	require_once("../modules/class.song.php");
+	require_once("../modules/class.search.php");
+	$songname = $_REQUEST['songname'];
+	$search = new Search();
+	$i = $search->getsongsidBysongname($songname);
+	if($i==1)
+	{
+	   $sid = $search->songname[0];
+	   $song = new Song();
+	   $song->addsongtimes($sid);
+	}
+?>

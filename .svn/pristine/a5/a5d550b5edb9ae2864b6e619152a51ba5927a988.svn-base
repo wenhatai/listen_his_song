@@ -1,0 +1,9 @@
+﻿<?php
+	require_once("../modules/class.fgroup.php");
+	$myopenid=$_REQUEST['openid'];
+	$name=$_REQUEST['newgroup'];
+	$id=$_REQUEST['groupid'];
+	$group=new Group();
+	$group->RenameGroup($myopenid,$name,$id);
+	echo "1";
+?>

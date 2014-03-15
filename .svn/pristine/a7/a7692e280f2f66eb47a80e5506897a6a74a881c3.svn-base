@@ -1,0 +1,25 @@
+﻿<?php
+require_once("../modules/class.user.php");
+session_start();
+if(isset($_SESSION['uid'])){
+	$fid = $_REQUEST['fid'];
+	$fname = NULL;
+	$user = new User();
+	$user->uid = $_SESSION['uid'];
+	if(isset($_REQUEST['fname'])){
+		$fname = $_REQUEST['fname'];		
+		}
+	$i=0;
+	$i=$user->addFriend($fid, $fname);
+	if($i==1)
+	{
+	echo "1";
+	}
+	else
+	{
+	echo "0";
+	}
+} else {
+	echo "2";
+}
+?>

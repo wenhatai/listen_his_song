@@ -1,0 +1,19 @@
+﻿<?php 
+	require_once("../modules/class.search.php");
+		$search=new Search();
+		$name=$_REQUEST['name'];
+		$n=$search->songsByName($name);
+		echo $n."!" ;
+		for($i=0;$i<$n;$i++){
+			echo $search->songs[$i]->name."|";
+		}
+		for($i=0;$i<$n;$i++){
+		    echo $search->songs[$i]->genre_name."|";
+		}
+		for($i=0;$i<$n;$i++){
+			echo $search->songs[$i]->singer."|";
+		}
+		for($i=0;$i<$n;$i++){
+			echo $search->songs[$i]->sid."|";
+		}
+?>

@@ -1,0 +1,102 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title></title>
+	<link rel="stylesheet" href="css/style.css" type="text/css" />
+<!--	<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.min.js"></script>-->
+	<script type="text/javascript" src="../js/jquery.js"></script>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+	<script language="javascript" src="../js/user/index_head.js"></script>
+	<script language="javascript" src="../js/user/showyourfriend.js"></script>
+    <script type="text/javascript" src="../js/user/showyourfriend2.js"></script>
+    <script language="javascript" src="../js/user/logout_in_index.js"></script>
+    <script language="javascript" src="../js/user/songlist.js"></script>
+    <script language="javascript" src="../js/search/searchsong_index.js"></script>	
+	<script language="javascript" src="../js/user/showsong_byrate.js"></script>
+	<script language="javascript" src="../js/user/showsong_whenin.js"></script>
+	<script language="javascript" src="../js/user/deletesongfromsonglist.js"></script>
+	<script type="text/javascript">  
+	</script>
+	<style type="text/css">
+	</style>
+</head>
+<body>
+	<div id="main">
+		<div id="left">
+			<div id="uers">
+				<img id="userhead" src="image/userHead.jpg" alt="userhead"/>
+	            <a href='http://localhost/listen-his-songs/user/login.html' id="out1">退出</a>
+			</div>
+			<div id="friendlist">
+				<p id="title">好友列表</p>
+				<ul>
+					<li class="grouping"><span>我的好友</span>
+						<ul class="list" id="friend1">
+						</ul>
+					</li>
+					<li class="grouping"><span>NBA好友</span>
+						<ul class="list"> 
+							<li><img src="image/userhead.png" alt="another" /><span>科比</span><a class="musicname" href="#">老人与海</a></li>
+							<li><img src="image/userhead.png" alt="another" /><span>科比</span><a class="musicname" href="#">老人与海</a></li>
+							<li><img src="image/userhead.png" alt="another" /><span>科比</span><a class="musicname" href="#">老人与海</a></li>
+							<li><img src="image/userhead.png" alt="another" /><span>科比</span><a class="musicname" href="#">老人与海</a></li>
+							<li><img src="image/userhead.png" alt="another" /><span>科比</span><a class="musicname" href="#">老人与海</a></li>
+						</ul>
+					</li>
+					<li class="grouping"><span>NBA好友</span>
+						<ul class="list">
+							<li><img src="image/userhead.png" alt="another" /><span>科比</span><a class="musicname" href="#">老人与海</a></li>
+							<li><img src="image/userhead.png" alt="another" /><span>科比</span><a class="musicname" href="#">老人与海</a></li>
+							<li><img src="image/userhead.png" alt="another" /><span>科比</span><a class="musicname" href="#">老人与海</a></li>
+							<li><img src="image/userhead.png" alt="another" /><span>科比</span><a class="musicname" href="#">老人与海</a></li>
+							<li><img src="image/userhead.png" alt="another" /><span>科比</span><a class="musicname" href="#">老人与海</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+			<div id="addrmove">
+				<a href="http://localhost/listen-his-songs/user/searchsong.html" target="_blank"><img src="image/delete.png" alt="" /></a>
+				<a href="http://localhost/listen-his-songs/user/search_addfriend.html" target="_blank"><img src="image/search.png" alt="" /></a>
+			</div>	
+		</div>
+		<div id="middle">
+			<div id="play">
+				<div id="palybutton"><img src="image/play.png" alt="" /></div>
+				<div id="palybar">
+					<h2>稻香</h2><h3>-周杰伦</h3>
+					<div class="clear"></div>
+					<div id="bar">
+						<div id="start"></div>
+						<img id="dot" src="image/progressbar.png" alt="" />
+						<div id="end"></div>
+					</div>	
+					<span id="starttime">00:56</span><span id="endtime">04:32</span>
+				</div>
+				<div id="sound"><img src="image/volumeControl.png" alt="" /></div>
+			</div>
+			<div id="playlist">
+				<img src="image/top.png" alt="" />
+				<ul id="list_all">
+				</ul>
+			</div>
+			<div id="listbottom" class="button">
+				<p id="return">返回我的</p>
+				<select name="" id="last">
+				<option id="five" onclick="get(this.id)">最近五天</option>
+				<option id="ten" onclick="get(this.id)">最近十天</option>
+				<option id="fifteen" onclick="get(this.id)">最近十五天</option>
+				<option id="month" onclick="get(this.id)">最近一个月</option>
+				</select>
+				<input type="button" id="delete" value="删除">
+			</div>
+		</div>
+		<div id="right">
+			<img src="image/soso.png" alt="soso" /><br />
+			<input id="search_song" type="text"  value="在此输入歌曲名称"/>
+			<input id="search_button" type="button" value="搜索"  />
+		</div>
+	</div>
+</body>
+</html>

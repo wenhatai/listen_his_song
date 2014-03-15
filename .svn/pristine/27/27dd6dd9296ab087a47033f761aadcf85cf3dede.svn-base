@@ -1,0 +1,6 @@
+<?PHP
+	$address = "localhost";
+	$schema = "listen_his_songs";
+	$username = "root";
+	$password = "111111";
+?>

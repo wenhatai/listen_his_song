@@ -1,0 +1,38 @@
+<?php
+/*
+Uploadify
+Copyright (c) 2012 Reactive Apps, Ronnie Garcia
+Released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
+*/
+require_once("../modules/class.song.php");
+/*
+if(!isset($_POST['name']) || !isset($_POST['singer'])){
+	echo "Need 2 params!".$_POST['name'];
+	exit();
+}
+*/
+if (!empty($_FILES)) {
+	$tempFile = $_FILES['Filedata']['tmp_name'];
+	$targetFolder = '/listen-his-songs/uploads'; // Relative to the root
+	$targetPath = $_SERVER['DOCUMENT_ROOT'] . $targetFolder;
+	$targetFile = rtrim($targetPath,'/') . '/';//$_FILES['Filedata']['name'];
+	
+	// Validate the file type
+	$fileTypes = array('mp3'); // File extensions
+	$fileParts = pathinfo($_FILES['Filedata']['name']);
+	if (in_array($fileParts['extension'],$fileTypes)) {
+		$song = new Song();
+		$song->songName = $_REQUEST['name'];
+		$song->singerName = $_REQUEST['singer'];
+		if($song->isExist()){
+			echo "MP3 file had been uploaded by some other body!";
+			exit();
+		}
+		$sid = $song->insert();
+		move_uploaded_file($tempFile,$targetFile.$sid."song.mp3");
+		echo '1'.$_REQUEST['name'];
+	} else {
+		echo 'Invalid file type.';
+	}
+}
+?>

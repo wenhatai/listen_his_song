@@ -1,0 +1,51 @@
+<?php
+include("config.php");
+
+class Friend{
+	private $mysqli;
+
+	// 构造函数
+	function __construct(){
+		$this->mysqli = new mysqli($GLOBALS['address'], $GLOBALS['username'], $GLOBALS['password'], $GLOBALS['schema']);
+		if($this->mysqli->connect_errno){
+			echo "Connect failed:%s\n".$this->mysqli->connect_error();
+			exit();
+		}
+		$this->mysqli->query("set names utf8");
+		//$this->mysqli->query("set character_set_results=GBK");
+	}
+	
+	// 析构函数
+	function __destruct(){
+		if($this->mysqli){
+			$this->mysqli->close();
+		}
+	}
+	
+	function insert($gid, $fopenid){
+		$sql = "INSERT INTO friend (gid, fopenid) VALUES (?, ?)";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("ss", $gid, $fopenid);
+		$stmt->execute();
+		$stmt->close();
+		$this->uid = $this->mysqli->insert_id;
+		return $this->uid;
+	}
+	
+	function findFriendsInGroup($gid){
+		$ret = array();
+		$sql = "SELECT fopenid FROM friend WHERE gid = ?";
+		$stmt = $this->mysqli->prepare($sql);
+		$stmt->bind_param("i", $gid);
+		$stmt->execute();
+		$stmt->bind_result($openid);
+		$i = 0;
+		while($stmt->fetch()){
+			$ret[$i]['openid'] = $openid;
+			$i++;
+		}
+		$stmt->close();
+		return $ret;
+	}
+}
+?>

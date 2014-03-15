@@ -1,0 +1,12 @@
+﻿$(document).ready(function(){
+	$.ajax({
+		url:"songgenre.php",
+		type:"POST",
+		success:function(data){
+			var name=data.split("!");
+			for(var i=0; i<name[0]; i++){
+					$("#genre").append("<option value="+name[i+1]+">"+ name[i+1] +"</option>"); 
+			}
+		}
+	});
+});

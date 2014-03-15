@@ -1,0 +1,38 @@
+﻿$(document).ready(function(){
+	var friendsid=1;            //保存传送过来的朋友或者用户本身的id
+	var dayselect=1;
+	$("#last").change(function(){
+		var choice=$("#last").find("option:selected").text();
+		if(choice=="最近五天")
+			dayselect=1;
+		if(choice=="最近十天")
+			dayselect=2;
+		if(choice=="最近十五天")
+			dayselect=3;
+		if(choice=="最近一个月")
+			dayselect=4;			
+		$.ajax({
+			url:"p/songdatalist.php",
+			type:"POST",
+			data:{"fid":friendsid,"days":dayselect},
+			success:function(data){
+				var i=1;
+				var opanel = document.getElementById("songlist");
+				while(opanel.firstChild){
+					opanel.removeChild(opanel.firstChild);
+				}
+				var daysresult=data.split("!");
+				for(x in daysresult){
+					if(i%2==1)
+						cl="odd";
+					else 
+						cl="even";
+					i++;
+					var Dresult=daysresult[x].split("|");
+					$("#songlist").append("<li sid="+ Dresult[0] +" class="+ cl + "><span class='list1'>"+ Dresult[1] +" </span>"
+					+ "<span class='list2'>"+ Dresult[2] +"</span><span class='list3'>"+ Dresult[3] +"</span><span class='list4'>下载</span>");
+				}
+			}
+		});
+	});
+});

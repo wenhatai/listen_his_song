@@ -1,0 +1,17 @@
+﻿<?php 
+	require_once("../modules/class.search.php");
+	session_start();
+		$uid=$_SESSION['uid'];
+		$search=new Search();
+		$friendid=$_REQUEST['friendid'];
+		$n=$search->songListOfUser($friendid);
+		echo $n."!";
+		$search->getsongnameBysid($search->order_five_days[0]);
+		echo $search->songname[0]."|";
+		$search->getsongnameBysid($search->order_ten_days[0]);
+		echo $search->songname[0]."|";
+		$search->getsongnameBysid($search->order_fifteen_days[0]);
+		echo $search->songname[0]."|";
+		$search->getsongnameBysid($search->order_month[0]);
+		echo $search->songname[0]."|";
+?>

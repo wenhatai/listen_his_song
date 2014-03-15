@@ -1,0 +1,37 @@
+
+/*$(document).ready(function(){
+	$("#return").live('click',function(){
+		document.getElementById('playlist').style.display ="block";
+		document.getElementById('list_all').style.display ="none";
+	$.ajax({
+		url:"p/showsong_whenin.php",
+		method:"post",
+		data:{'openid':openid},
+		success:function(data){
+			data = data.replace(/(^\s*)/g, "");
+			var fri1=data.split("!");
+			var num=parseInt(fri1[0]);
+			if(num == 0)
+			{
+			 
+               $("#playlist").append("<li id='not' class='jp-playlist-item' >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+
+			   "对不起 ！&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 您最近未听歌！&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+
+			   "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>");			   
+			}
+			else
+			{
+			var fri=fri1[1];
+			var fri2=fri.split("|");
+			for(var i=0; i<num; i++){
+				myPlayerlist.add({
+					title:fri2[i],
+					free: true,
+					mp3:"music/"+fri2[i+3*num]+"song.mp3",
+				});
+				}
+			}
+		}
+	});
+  });
+});
+*/

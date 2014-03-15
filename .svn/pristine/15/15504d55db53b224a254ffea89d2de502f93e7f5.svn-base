@@ -1,0 +1,49 @@
+$(document).ready(function(){
+	//ajax异步传输的问题
+	$.ajaxSetup({
+		async: false
+	});
+	var allgid;
+	var allname;
+
+	
+//从好友列表中获取得到相应好友列表分组
+	$.ajax({
+		url:"fgroup/fgrouplist.php",
+		type:"POST",
+		data:{"openid":openid},
+		success:function(data){
+			var groupinfo=data.split("<br>");
+			allgid=groupinfo[0];
+			allname=groupinfo[1];
+			var gid=allgid.split("<tr>");
+			var name=allname.split("<tr>");
+			for(var i=0;i<name.length;i++){
+				$("#friendlist ul:first").append("<li class='grouping'><span class='friendtitle'>"+ name[i] +"</span>"
+				+"<ul class='list' id="+ gid[i] +"></ul></li>");
+			}
+		}
+	});
+	
+//将已经分组的好友添加进来
+	$.ajax({
+		url:"fgroup/friendgroup.php",
+		type:"POST",
+		data:{"allgid":allgid},
+		success:function(data){
+			var fopenids=data.split("<br>");
+			var gid=allgid.split("<tr>");
+			for(var i=0;i<fopenids.length-1;i++){
+				var fopenid=fopenids[i].split("<tr>");
+				for(var j=0;j<fopenid.length-1;j++){
+					for(var k=0;k<friends.items.length;k++){
+						if(friends.items[k].openid==fopenid[j]){
+							$("#"+gid[i]).append("<li><img src="+ friends.items[k].figureurl +" alt='another' />"
+							+"<span>"+ friends.items[k].nickname +"</span></li>");
+						}
+					}
+				}
+			}
+		}
+	});
+});
